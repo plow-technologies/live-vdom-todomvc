@@ -26,6 +26,7 @@ library
                      , containers
                      , lens
                      , ghcjs-vdom
+                     , ghcjs-ffiqq
   default-language:    Haskell2010
 
 executable vdom-todomvc-output
@@ -35,6 +36,10 @@ executable vdom-todomvc-output
   build-depends:       base
                      , ghcjs-base
                      , vdom-todomvc
+                     , stm-notify
+                     , containers
+                     , live-vdom
+                     , ghcjs-ffiqq
   default-language:    Haskell2010
 
 source-repository head
