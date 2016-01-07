@@ -13,7 +13,7 @@ cabal sandbox add-source /path/to/live-vdom
 cabal sandbox add-source /path/to/live-vdom/non-hackage-dependencies/*
 ```
 
-You will also need (valentine)[https://github.com/plow-technologies/valentine].
+You will also need [valentine](https://github.com/plow-technologies/valentine).
 
 ```
 cabal sandbox add-source /path/to/valentine
