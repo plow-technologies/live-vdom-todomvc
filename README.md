@@ -22,4 +22,12 @@ cabal sandbox add-source /path/to/valentine
 
 # Running
 
-To build the project you 
+To build the project you need to configure, install, and build with ghcjs
+
+```
+cabal configure --ghcjs
+cabal install --ghcjs
+cabal build
+```
+
+Now you can open the index in a browser
