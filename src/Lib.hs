@@ -1,36 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes       #-}
 module Lib where
 
 import           Types
 
-import           Control.Concurrent.STM
-import           Control.Lens
-import           Control.Monad
-import qualified Data.Sequence          as S
+import           Control.Lens  (each, ix, over, set, view)
+import qualified Data.Sequence as S
 
 
-import           Data.JSString          as JS
-import           GHCJS.Foreign.QQ
-import           GHCJS.Types
-import           GHCJS.VDOM.Event
-import           LiveVDom
-import           LiveVDom.Adapter.Types
-import qualified LiveVDom.Types         as T
-import           Valentine
-
-
-
--- Please make sure this is removed.
-import           Unsafe.Coerce
-
-  -- <head>
-  --   <meta charset="utf-8">
-  --   <title>GHCJS LiveVDom • TodoMVC</title>
-  --   <link rel="stylesheet" href="node_modules/todomvc-common/base.css">
-  --   <link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
-  --   <style>[ng-cloak] { display: none; }</style>
-  -- </head>
+import           Data.JSString as JS
+import           LiveVDom      (Message, STMMailbox, modifyMailbox)
 
 -- | Make a Todo item from a title
 mkTodo :: JSString -> Todo

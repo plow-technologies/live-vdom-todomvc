@@ -2,28 +2,27 @@
 {-# LANGUAGE QuasiQuotes       #-}
 module View where
 
-import           Types
 import           Lib
+import           Types
 
-import           Control.Concurrent.STM
-import           Control.Lens
-import           Control.Monad
+import           Control.Lens           (over, (^.))
+import           Control.Monad          (void)
 import qualified Data.Sequence          as S
 
 
 import           Data.JSString          as JS
-import           GHCJS.Foreign.QQ
-import           GHCJS.Types
-import           GHCJS.VDOM.Event
+import           GHCJS.Foreign.QQ       (js, js_)
+import           GHCJS.Types            (JSVal)
+import           GHCJS.VDOM.Event       (click, dblclick, preventDefault,
+                                         submit)
 import           LiveVDom
 import           LiveVDom.Adapter.Types
 import qualified LiveVDom.Types         as T
 import           Valentine
 
+-- Hopefully this can be removed
+import           Unsafe.Coerce (unsafeCoerce)
 
-
--- Please make sure this is removed.
-import           Unsafe.Coerce
 
 todoMVC :: STMMailbox JSString -> STMMailbox TodoFilter -> STMMailbox (S.Seq Todo) -> LiveVDom
 todoMVC inputMb filterMb todoListMb = [valentine|
@@ -32,14 +31,14 @@ todoMVC inputMb filterMb todoListMb = [valentine|
     <header id="header">
       <h1>
         todos
-      ${todoForm todoListMb inputMb $ addTodo todoListMb}
+      ${todoForm todoListMb}
     ${todoBody todoListMb filterMb}
     !{todoBodyFooter (sendMessage $ snd filterMb) (clearCompleted todoListMb) <$> fst filterMb <*> fst todoListMb}
   ${todoFooter}
 |]
 
-todoForm :: STMMailbox (S.Seq Todo) -> STMMailbox JSString -> (JSString -> Message ()) -> LiveVDom
-todoForm todoMb inputMb update = T.LiveVNode [submitEvent] "form" [prop] children
+todoForm :: STMMailbox (S.Seq Todo) -> LiveVDom
+todoForm todoMb = T.LiveVNode [submitEvent] "form" [prop] children
   where submitEvent = submit $ \e -> do
           preventDefault e
           let jse = unsafeCoerce e :: JSVal
@@ -72,14 +71,18 @@ todoBody todoMb@(todoEnv, todoAddr) (filternEnv,_) = [valentine|
     &{forEach (filterTodo <$> filternEnv <*> todoEnv, todoAddr) displayTodoItem }
 |]
 
+
+
+-- | Display a todo single item
+-- Currently doesn't have the input form finished
 displayTodoItem :: Todo -> (Maybe Todo -> Message ()) -> LiveVDom
-displayTodoItem item updateItem = (flip T.addProps $ editing ++ completed)[valentine|
+displayTodoItem item updateItem = (flip T.addProps $ completed)[valentine|
 <li>
   <div class="view">
     ${T.addEvent (click . const . void . runMessages . updateItem . Just . toggleCompleted' $ item) $ input (liProps)}
     ${todoItemTitle}
     ${buttonWith (updateItem Nothing) [Property "class" $ JSPString "destroy"] ""}
-  <form ng-submit="saveEdits(todo, 'submit')">
+  <form>
     <input class="edit" ng-trim="false" ng-model="todo.title" todo-escape="revertEdits(todo)" ng-blur="saveEdits(todo, 'blur')" todo-focus="todo == editedTodo">
 |]
   where todoItemTitle = T.addEvent (dblclick . const . void . runMessages . updateItem . Just $ setEdit item) [valentine|
@@ -93,8 +96,8 @@ displayTodoItem item updateItem = (flip T.addProps $ editing ++ completed)[valen
         completed = if item ^. todoCompleted
                       then [Property "class" $ JSPString "completed"]
                       else []
-        editing = []
         toggleCompleted' = over todoCompleted not
+
 
 todoBodyFooter :: (TodoFilter -> Message ()) -> Message () -> TodoFilter -> S.Seq Todo -> LiveVDom
 todoBodyFooter updateFilter clearTodos selected todoItems = [valentine|
@@ -108,7 +111,7 @@ todoBodyFooter updateFilter clearTodos selected todoItems = [valentine|
     ${filterOption "Completed" selected FilterCompleted updateFilter }
   ${buttonWith clearTodos [Property "id" $ JSPString "clear-completed"] "Clear completed"}
 |]
--- 
+--
 
 filterOption :: JSString -> TodoFilter -> TodoFilter -> (TodoFilter -> Message ()) -> LiveVDom
 filterOption title selected option onClick = [valentine|
