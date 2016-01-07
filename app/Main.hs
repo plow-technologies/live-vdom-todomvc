@@ -2,7 +2,7 @@
 {-# LANGUAGE QuasiQuotes       #-}
 module Main where
 
-import           Lib
+import           View
 import           Types
 
 import           Control.Concurrent.STM.Notify
@@ -12,8 +12,8 @@ import           LiveVDom
 import           GHCJS.Foreign.QQ
 
 
-jsFiles = ["../../../../lib/base.js"]
-cssFiles = ["../../../../lib/base.css"]
+jsFiles = ["lib/base.js"]
+cssFiles = ["lib/base.css"]
 
 
 
@@ -23,7 +23,6 @@ addCss str = [js_|
   ss.type = "text/css";
   ss.rel = "stylesheet";
   ss.href = `str;
-  console.log(ss);
   document.getElementsByTagName("head")[0].appendChild(ss);
 |]
 
@@ -32,15 +31,13 @@ addJs str = [js_|
   var js = document.createElement("script");
   js.type = "text/javascript";
   js.src = `str;
-  console.log(js);
   document.getElementsByTagName("head")[0].appendChild(js);
 |]
 
-
 main :: IO ()
 main = do
-  mapM_ addJs jsFiles
   mapM_ addCss cssFiles
+  mapM_ addJs jsFiles
   xs <- spawnIO S.empty
   fil <- spawnIO FilterNone
   inp <- spawnIO ""

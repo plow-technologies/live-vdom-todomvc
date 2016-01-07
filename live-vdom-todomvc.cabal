@@ -1,4 +1,4 @@
-name:                vdom-todomvc
+name:                live-vdom-todomvc
 version:             0.1.0.0
 synopsis:            Initial project template from stack
 description:         Please see README.md
@@ -18,6 +18,7 @@ library
   ghc-options:         -Wall
   exposed-modules:     Lib
                       ,Types
+                      ,View
   build-depends:       base >= 4.7 && < 5
                      , ghcjs-base
                      , live-vdom
@@ -35,7 +36,7 @@ executable vdom-todomvc-output
   ghc-options:         -Wall
   build-depends:       base
                      , ghcjs-base
-                     , vdom-todomvc
+                     , live-vdom-todomvc
                      , stm-notify
                      , containers
                      , live-vdom
