@@ -1,3 +1,3 @@
-# vdom-todomvc
+# live-vdom-todomvc
 
-add description of vdom-todomvc here
+Implementation of the todomvc with live-vdom
