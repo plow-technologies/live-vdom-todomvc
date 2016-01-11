@@ -24,8 +24,8 @@ import           Valentine
 import           Unsafe.Coerce (unsafeCoerce)
 
 
-todoMVC :: STMMailbox JSString -> STMMailbox TodoFilter -> STMMailbox (S.Seq Todo) -> LiveVDom
-todoMVC inputMb filterMb todoListMb = [valentine|
+todoMVC :: STMMailbox TodoFilter -> STMMailbox (S.Seq Todo) -> LiveVDom
+todoMVC filterMb todoListMb = [valentine|
 <div>
   <section id="todoapp">
     <header id="header">

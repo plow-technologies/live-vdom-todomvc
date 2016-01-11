@@ -41,6 +41,5 @@ main = do
   mapM_ addJs jsFiles
   xs <- spawnIO S.empty
   fil <- spawnIO FilterNone
-  inp <- spawnIO ""
   container <- createContainer
-  runDom container (return ()) (todoMVC inp fil xs)
+  runDom container (return ()) $ todoMVC fil xs
